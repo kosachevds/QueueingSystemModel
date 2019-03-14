@@ -21,10 +21,41 @@ namespace QueueingSystemModel
 
         public ModelingResult Run()
         {
-
+            var waitingTimes = new List<double>(MaxRequestCount);
+            var downtimes = new List<double>(MaxRequestCount);
+            var maxQueueSize = 0;
+            var times = this.GenerateTimes();
+            var waitingRequests = new Queue<double>();
+            var currentTime = 0.0;
+            while (true) {
+                double servicedRequest;
+                if (waitingRequests.Count > 0) {
+                    servicedRequest = waitingRequests.Dequeue();
+                    waitingTimes.Add(currentTime - servicedRequest);
+                    downtimes.Add(0.0);
+                } else if (times.Count > 0) {
+                    servicedRequest = times.Dequeue();
+                    Debug.Assert(servicedRequest >= currentTime, "Queueing error");
+                    waitingTimes.Add(0.0);
+                    downtimes.Add(servicedRequest - currentTime);
+                    currentTime = servicedRequest;
+                } else {
+                    break;
+                }
+                var serviceTime = this.GenerateSeviceTime();
+                var endService = currentTime + serviceTime;
+                while (times.Peek() < endService) {
+                    waitingRequests.Enqueue(times.Dequeue());
+                }
+                maxQueueSize = Math.Max(maxQueueSize, waitingRequests.Count);
+            }
+            return new ModelingResult
+            {
+                MaxQueueSize = maxQueueSize
+            };
         }
 
-        private Queue<double> GenerateTimes()
+        private Queue<double> GenerateTimes()  // Rename to GenerateRequests
         {
             var times = new Queue<double>(this.MaxRequestCount);
             var last = 0.0;
@@ -44,8 +75,5 @@ namespace QueueingSystemModel
             return this.minServingTime +
                 randomValue * (this.maxServingTime - this.minServingTime);
         }
-
-        private static double
-
     }
 }
