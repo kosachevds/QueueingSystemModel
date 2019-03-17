@@ -24,6 +24,7 @@ namespace QueueingSystemModel
         {
             var waitingTimes = new List<double>(MaxRequestCount);
             var downtimes = new List<double>(MaxRequestCount);
+            var spentTimes = new List<double>(MaxRequestCount);
             var maxQueueSize = 0;
             var requestTimes = this.GenerateRequestTimes();
             var waitingRequests = new Queue<double>();
@@ -32,7 +33,8 @@ namespace QueueingSystemModel
                 double servicedRequest;
                 if (waitingRequests.Count > 0) {
                     servicedRequest = waitingRequests.Dequeue();
-                    waitingTimes.Add(currentTime - servicedRequest);
+                    var waitingTime = currentTime - servicedRequest;
+                    waitingTimes.Add(waitingTime);
                     downtimes.Add(0.0);
                 } else if (requestTimes.Count > 0) {
                     servicedRequest = requestTimes.Dequeue();
@@ -45,6 +47,7 @@ namespace QueueingSystemModel
                 }
                 var serviceTime = this.GenerateSeviceTime();
                 var endService = currentTime + serviceTime;
+                spentTimes.Add(endService - servicedRequest);
                 while (requestTimes.Peek() < endService) {
                     waitingRequests.Enqueue(requestTimes.Dequeue());
                 }
@@ -54,7 +57,8 @@ namespace QueueingSystemModel
             {
                 MaxQueueSize = maxQueueSize,
                 AverageDowntime = GetAverage(downtimes),
-                AverageWaitingInQueue = GetAverage(waitingTimes)
+                AverageWaitingInQueue = GetAverage(waitingTimes),
+                AverageSpentTime = GetAverage(spentTimes)
             };
         }
 
