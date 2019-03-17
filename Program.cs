@@ -6,7 +6,14 @@ namespace QueueingSystemModel
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            RunModeling();
+        }
+
+        static void RunModeling()
+        {
+            var queuingSystem = new QueueingSystem(0.5);
+            var results = queuingSystem.Run();
+            Console.WriteLine($"Results:\n{ results }");
         }
     }
 }
