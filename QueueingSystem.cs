@@ -10,7 +10,7 @@ namespace QueueingSystemModel
         private static Random rnd = new Random();
         private double lambda;
         private double minServingTime = 0.1;
-        private double maxServingTime = 5;
+        private double maxServingTime = 4;
 
         public int MaxRequestCount { get; set; }
 
@@ -26,7 +26,7 @@ namespace QueueingSystemModel
             var downtimesSum = 0.0;
             var spentTimesSum = 0.0;
             var maxQueueSize = 0;
-            var queueSizesSum = 0;
+            var queueSizesSum = 0L;
             var requestTimes = this.GenerateRequestTimes();
             var waitingRequests = new Queue<double>();
             var currentTime = 0.0;
