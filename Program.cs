@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace QueueingSystemModel
 {
@@ -20,7 +22,7 @@ namespace QueueingSystemModel
             Console.WriteLine($"Results:\n{ results }");
         }
 
-        static void AnalyzeFluxDensity()
+        static async Task AnalyzeFluxDensity()
         {
             const double MinLambda = 0.1;
             const double MaxLambda = 4;
@@ -36,12 +38,19 @@ namespace QueueingSystemModel
                 lambdas.Add(queuingSystem.Lambda);
                 queuingSystem.Lambda += LambdaStep;
             }
-            WriteResults(OutputFilename, lambdas, results);
+            await WriteResultsAsync(OutputFilename, lambdas, results);
         }
 
-        static void WriteResults(string filename, List<double> variable, List<ModelingResult> results)
+        static async Task WriteResultsAsync(string filename, List<double> variable, List<ModelingResult> results)
         {
-
+            using (var writer = File.CreateText(filename))
+            {
+                for (int i = 0; i < variable.Count; ++i)
+                {
+                    var newLine = String.Format("{0} {1}", variable[i], results[i].ToSimpleString());
+                    await writer.WriteLineAsync(newLine);
+                }
+            }
         }
     }
 }
