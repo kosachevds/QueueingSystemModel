@@ -31,12 +31,12 @@ namespace QueueingSystemModel
             var currentTime = 0.0;
             while (true) {
                 double servicedRequest;
-                if (waitingRequests.Count > 0) {
+                if (waitingRequests.Any()) {
                     servicedRequest = waitingRequests.Dequeue();
                     var waitingTime = currentTime - servicedRequest;
                     waitingTimes.Add(waitingTime);
                     downtimes.Add(0.0);
-                } else if (requestTimes.Count > 0) {
+                } else if (requestTimes.Any()) {
                     servicedRequest = requestTimes.Dequeue();
                     Debug.Assert(servicedRequest >= currentTime, "Queueing error");
                     waitingTimes.Add(0.0);
@@ -48,7 +48,7 @@ namespace QueueingSystemModel
                 var serviceTime = this.GenerateSeviceTime();
                 var endService = currentTime + serviceTime;
                 spentTimes.Add(endService - servicedRequest);
-                while (requestTimes.Peek() < endService) {
+                while (requestTimes.Any() && requestTimes.Peek() < endService) {
                     waitingRequests.Enqueue(requestTimes.Dequeue());
                 }
                 maxQueueSize = Math.Max(maxQueueSize, waitingRequests.Count);
