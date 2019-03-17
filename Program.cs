@@ -13,8 +13,10 @@ namespace QueueingSystemModel
         static void Main(string[] args)
         {
             SetInvariantCulture();
+
             // RunSystem();
-            AnalyzeFluxDensity().Wait();
+            // AnalyzeFluxDensity().Wait();
+            AnalyzeServingTimeIntervalWidth().Wait();
         }
 
         static void SetInvariantCulture() {
@@ -38,14 +40,38 @@ namespace QueueingSystemModel
             var queuingSystem = new QueueingSystem(MinLambda);
             var lambdas = new List<double>();
             var results = new List<ModelingResult>();
-            while (queuingSystem.Lambda < MaxLambda)
+            while (queuingSystem.Lambda <= MaxLambda)
             {
                 var result = queuingSystem.Run();
                 results.Add(result);
                 lambdas.Add(queuingSystem.Lambda);
+
                 queuingSystem.Lambda += LambdaStep;
             }
             await WriteResultsAsync(OutputFilename, lambdas, results);
+        }
+
+        static async Task AnalyzeServingTimeIntervalWidth()
+        {
+            const double MinWidth = 1;
+            const double MaxWidth = 5;
+            const double WidthStep = 0.1;
+
+            var queuingSystem = new QueueingSystem(0.5);
+            var widths = new List<double>();
+            var results = new List<ModelingResult>();
+            double width = MinWidth;
+            while (width <= MaxWidth)
+            {
+                queuingSystem.MaxServingTime = queuingSystem.MinServingTime + width;
+
+                var result = queuingSystem.Run();
+                results.Add(result);
+                widths.Add(width);
+
+                width += WidthStep;
+            }
+            await WriteResultsAsync(OutputFilename, widths, results);
         }
 
         static async Task WriteResultsAsync(string filename, List<double> variable, List<ModelingResult> results)
