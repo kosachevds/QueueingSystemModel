@@ -22,9 +22,9 @@ namespace QueueingSystemModel
 
         public ModelingResult Run()
         {
-            var waitingTimes = new List<double>(MaxRequestCount);
-            var downtimes = new List<double>(MaxRequestCount);
-            var spentTimes = new List<double>(MaxRequestCount);
+            var waitingSum = 0.0;
+            var downtimesSum = 0.0;
+            var spentTimesSum = 0.0;
             var maxQueueSize = 0;
             var requestTimes = this.GenerateRequestTimes();
             var waitingRequests = new Queue<double>();
@@ -34,31 +34,30 @@ namespace QueueingSystemModel
                 if (waitingRequests.Any()) {
                     servicedRequest = waitingRequests.Dequeue();
                     var waitingTime = currentTime - servicedRequest;
-                    waitingTimes.Add(waitingTime);
-                    downtimes.Add(0.0);
+                    waitingSum += waitingTime;
                 } else if (requestTimes.Any()) {
                     servicedRequest = requestTimes.Dequeue();
                     Debug.Assert(servicedRequest >= currentTime, "Queueing error");
-                    waitingTimes.Add(0.0);
-                    downtimes.Add(servicedRequest - currentTime);
+                    downtimesSum += servicedRequest - currentTime;
                     currentTime = servicedRequest;
                 } else {
                     break;
                 }
                 var serviceTime = this.GenerateSeviceTime();
                 var endService = currentTime + serviceTime;
-                spentTimes.Add(endService - servicedRequest);
+                spentTimesSum += endService - servicedRequest;
                 while (requestTimes.Any() && requestTimes.Peek() < endService) {
                     waitingRequests.Enqueue(requestTimes.Dequeue());
                 }
+                currentTime = endService;
                 maxQueueSize = Math.Max(maxQueueSize, waitingRequests.Count);
             }
             return new ModelingResult
             {
                 MaxQueueSize = maxQueueSize,
-                AverageDowntime = GetAverage(downtimes),
-                AverageWaitingInQueue = GetAverage(waitingTimes),
-                AverageSpentTime = GetAverage(spentTimes)
+                AverageDowntime = downtimesSum / MaxRequestCount,
+                AverageWaitingInQueue = waitingSum / MaxRequestCount,
+                AverageSpentTime = spentTimesSum / MaxRequestCount
             };
         }
 
