@@ -25,7 +25,7 @@ namespace QueueingSystemModel
             var waitingTimes = new List<double>(MaxRequestCount);
             var downtimes = new List<double>(MaxRequestCount);
             var maxQueueSize = 0;
-            var times = this.GenerateTimes();
+            var requestTimes = this.GenerateRequestTimes();
             var waitingRequests = new Queue<double>();
             var currentTime = 0.0;
             while (true) {
@@ -34,8 +34,8 @@ namespace QueueingSystemModel
                     servicedRequest = waitingRequests.Dequeue();
                     waitingTimes.Add(currentTime - servicedRequest);
                     downtimes.Add(0.0);
-                } else if (times.Count > 0) {
-                    servicedRequest = times.Dequeue();
+                } else if (requestTimes.Count > 0) {
+                    servicedRequest = requestTimes.Dequeue();
                     Debug.Assert(servicedRequest >= currentTime, "Queueing error");
                     waitingTimes.Add(0.0);
                     downtimes.Add(servicedRequest - currentTime);
@@ -45,8 +45,8 @@ namespace QueueingSystemModel
                 }
                 var serviceTime = this.GenerateSeviceTime();
                 var endService = currentTime + serviceTime;
-                while (times.Peek() < endService) {
-                    waitingRequests.Enqueue(times.Dequeue());
+                while (requestTimes.Peek() < endService) {
+                    waitingRequests.Enqueue(requestTimes.Dequeue());
                 }
                 maxQueueSize = Math.Max(maxQueueSize, waitingRequests.Count);
             }
@@ -58,7 +58,7 @@ namespace QueueingSystemModel
             };
         }
 
-        private Queue<double> GenerateTimes()  // Rename to GenerateRequests
+        private Queue<double> GenerateRequestTimes()
         {
             var times = new Queue<double>(this.MaxRequestCount);
             var last = 0.0;
