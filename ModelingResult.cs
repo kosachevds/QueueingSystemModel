@@ -8,13 +8,14 @@ namespace QueueingSystemModel
         public double AverageWaitingInQueue { get; set; }
         public double AverageDowntime { get; set; }
         public double MaxQueueSize { get; set; }
+        public double AverageQueueSize { get; set; }
 
         public override string ToString()
         {
             var template = "Average Spent Time: {0}, Average Waiting Time: {1}, " +
-                "Average Downtime: {2}, Max Queue Size: {3}";
+                "Average Downtime: {2}, Max Queue Size: {3}, Average queue size: {4}";
             return String.Format(template,
-                AverageSpentTime, AverageWaitingInQueue, AverageDowntime, MaxQueueSize);
+                AverageSpentTime, AverageWaitingInQueue, AverageDowntime, MaxQueueSize, AverageQueueSize);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace QueueingSystemModel
         private static Random rnd = new Random();
         private double lambda;
         private double minServingTime = 0.1;
-        private double maxServingTime = 10;
+        private double maxServingTime = 5;
 
         public int MaxRequestCount { get; set; }
 
@@ -26,6 +26,7 @@ namespace QueueingSystemModel
             var downtimesSum = 0.0;
             var spentTimesSum = 0.0;
             var maxQueueSize = 0;
+            var queueSizesSum = 0;
             var requestTimes = this.GenerateRequestTimes();
             var waitingRequests = new Queue<double>();
             var currentTime = 0.0;
@@ -33,6 +34,7 @@ namespace QueueingSystemModel
                 double servicedRequest;
                 if (waitingRequests.Any()) {
                     servicedRequest = waitingRequests.Dequeue();
+                    queueSizesSum += waitingRequests.Count;
                     var waitingTime = currentTime - servicedRequest;
                     waitingSum += waitingTime;
                 } else if (requestTimes.Any()) {
@@ -48,6 +50,7 @@ namespace QueueingSystemModel
                 spentTimesSum += endService - servicedRequest;
                 while (requestTimes.Any() && requestTimes.Peek() < endService) {
                     waitingRequests.Enqueue(requestTimes.Dequeue());
+                    queueSizesSum += waitingRequests.Count;
                 }
                 currentTime = endService;
                 maxQueueSize = Math.Max(maxQueueSize, waitingRequests.Count);
@@ -57,7 +60,8 @@ namespace QueueingSystemModel
                 MaxQueueSize = maxQueueSize,
                 AverageDowntime = downtimesSum / MaxRequestCount,
                 AverageWaitingInQueue = waitingSum / MaxRequestCount,
-                AverageSpentTime = spentTimesSum / MaxRequestCount
+                AverageSpentTime = spentTimesSum / MaxRequestCount,
+                AverageQueueSize = queueSizesSum / MaxRequestCount
             };
         }
 
