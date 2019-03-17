@@ -8,16 +8,17 @@ namespace QueueingSystemModel
     class QueueingSystem
     {
         private static Random rnd = new Random();
-        private double lambda;
         private double minServingTime = 0.1;
         private double maxServingTime = 4;
+
+        public double Lambda { get; set; }
 
         public int MaxRequestCount { get; set; }
 
         public QueueingSystem(double lambda)
         {
             this.MaxRequestCount = 1000;
-            this.lambda = lambda;
+            this.Lambda = lambda;
         }
 
         public ModelingResult Run()
@@ -72,7 +73,7 @@ namespace QueueingSystemModel
             while (times.Count < this.MaxRequestCount)
             {
                 var randomValue = QueueingSystem.rnd.NextDouble();
-                var delay = -Math.Log(randomValue) / this.lambda;
+                var delay = -Math.Log(randomValue) / this.Lambda;
                 var nextRequest = previous + delay;
                 times.Enqueue(nextRequest);
                 previous = nextRequest;
