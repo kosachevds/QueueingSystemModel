@@ -12,7 +12,14 @@ namespace QueueingSystemModel
 
         static void Main(string[] args)
         {
-            RunSystem();
+            SetInvariantCulture();
+            // RunSystem();
+            AnalyzeFluxDensity().Wait();
+        }
+
+        static void SetInvariantCulture() {
+            System.Threading.Thread.CurrentThread.CurrentCulture =
+                System.Globalization.CultureInfo.InvariantCulture;
         }
 
         static void RunSystem()
