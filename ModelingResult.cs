@@ -11,10 +11,10 @@ namespace QueueingSystemModel
 
         public override string ToString()
         {
-            return $@"Average Spent Time: {AverageSpentTime}, \
-            Average Waiting Time: {AverageWaitingInQueue}, \
-            Average Downtime: {AverageDowntime}, \
-            Max Queue Size: {MaxQueueSize}";
+            var template = "Average Spent Time: {0}, Average Waiting Time: {1}, " +
+                "Average Downtime: {2}, Max Queue Size: {3}";
+            return String.Format(template,
+                AverageSpentTime, AverageWaitingInQueue, AverageDowntime, MaxQueueSize);
         }
     }
 }
