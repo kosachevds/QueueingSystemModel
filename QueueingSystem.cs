@@ -8,8 +8,10 @@ namespace QueueingSystemModel
     class QueueingSystem
     {
         private static Random rnd = new Random();
-        private double minServingTime = 0.1;
-        private double maxServingTime = 4;
+
+        public double MinServingTime { get; set; }
+
+        public double MaxServingTime { get; set; }
 
         public double Lambda { get; set; }
 
@@ -19,6 +21,8 @@ namespace QueueingSystemModel
         {
             this.MaxRequestCount = 1000;
             this.Lambda = lambda;
+            this.MinServingTime = 0.1;
+            this.MaxServingTime = 4;
         }
 
         public ModelingResult Run()
@@ -84,8 +88,8 @@ namespace QueueingSystemModel
         private double GenerateSeviceTime()
         {
             var randomValue = QueueingSystem.rnd.NextDouble();
-            return this.minServingTime +
-                randomValue * (this.maxServingTime - this.minServingTime);
+            return this.MinServingTime +
+                randomValue * (this.MaxServingTime - this.MinServingTime);
         }
 
         static double GetAverage(List<double> values)
