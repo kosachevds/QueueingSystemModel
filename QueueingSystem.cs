@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace QueueingSystemModel
 {
@@ -51,7 +52,9 @@ namespace QueueingSystemModel
             }
             return new ModelingResult
             {
-                MaxQueueSize = maxQueueSize
+                MaxQueueSize = maxQueueSize,
+                AverageDowntime = GetAverage(downtimes),
+                AverageWaitingInQueue = GetAverage(waitingTimes)
             };
         }
 
@@ -74,6 +77,11 @@ namespace QueueingSystemModel
             var randomValue = QueueingSystem.rnd.NextDouble();
             return this.minServingTime +
                 randomValue * (this.maxServingTime - this.minServingTime);
+        }
+
+        static double GetAverage(List<double> values)
+        {
+            return values.Sum() / values.Count;
         }
     }
 }
