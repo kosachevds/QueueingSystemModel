@@ -65,13 +65,14 @@ namespace QueueingSystemModel
         private Queue<double> GenerateRequestTimes()
         {
             var times = new Queue<double>(this.MaxRequestCount);
-            var last = 0.0;
+            var previous = 0.0;
             while (times.Count < this.MaxRequestCount)
             {
                 var randomValue = QueueingSystem.rnd.NextDouble();
-                var newItem = -Math.Log(randomValue) / this.lambda;
-                last = newItem;
-                times.Enqueue(last + newItem);
+                var delay = -Math.Log(randomValue) / this.lambda;
+                var nextRequest = previous + delay;
+                times.Enqueue(nextRequest);
+                previous = nextRequest;
             }
             return times;
         }
